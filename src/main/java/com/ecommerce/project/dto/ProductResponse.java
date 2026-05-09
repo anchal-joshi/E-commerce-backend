@@ -1,36 +1,19 @@
 package com.ecommerce.project.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-//Admin sends this when creating or updating a product
-public class ProductRequest {
-
-    @NotBlank(message = "Name is required")
+public class ProductResponse {
     private String name;
-
-    @NotBlank(message = "Description is required")
     private String description;
-
-    @NotNull(message = "Price is required")
     private int price;
-
-    @NotNull(message = "Quantity is required")
     private int quantity;
 
-    @NotBlank(message = "Category is required")
-    private String category_id;
-
-
-
-    public ProductRequest(String name, String description, int price, int quantity, String category_id) {
+    public ProductResponse(String name, String description, int price, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.quantity = quantity;
-        this.category_id = category_id;
     }
 
-    public ProductRequest() {
+    public ProductResponse() {
     }
 
     public String getName() {
@@ -51,14 +34,6 @@ public class ProductRequest {
 
     public int getPrice() {
         return price;
-    }
-
-    public String getCategory_id() {
-        return category_id;
-    }
-
-    public void setCategory_id(String category_id) {
-        this.category_id = category_id;
     }
 
     public void setPrice(int price) {

@@ -2,13 +2,13 @@ package com.ecommerce.project.dto;
 
 public class CartItemResponse {
     private Long productId;
-    private String ProductName;
+    private String productName;
     private int quantity;
     private int price;
 
     public CartItemResponse(Long productId, String productName, int quantity, int price) {
         this.productId = productId;
-        ProductName = productName;
+        this.productName = productName;
         this.quantity = quantity;
         this.price = price;
     }
@@ -25,11 +25,11 @@ public class CartItemResponse {
     }
 
     public String getProductName() {
-        return ProductName;
+        return productName;
     }
 
     public void setProductName(String productName) {
-        ProductName = productName;
+        productName = productName;
     }
 
     public int getQuantity() {

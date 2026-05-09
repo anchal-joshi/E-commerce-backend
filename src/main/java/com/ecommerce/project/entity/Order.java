@@ -11,11 +11,12 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, User user, String status, int total_price) {
+    public Order(Long id, User user, String status, int total_price, List<OrderItem> items) {
         this.id = id;
         this.user = user;
         this.status = status;
         this.total_price = total_price;
+        this.items = items;
     }
 
     @Id

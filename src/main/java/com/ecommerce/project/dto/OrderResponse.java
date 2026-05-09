@@ -3,6 +3,7 @@ package com.ecommerce.project.dto;
 import com.ecommerce.project.entity.OrderItem;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public class OrderResponse {
@@ -10,9 +11,9 @@ public class OrderResponse {
     private String status;
     private List<OrderItemResponse>items;
     private int totalPrice;
-    private LocalDate createdAt;
+    private Date createdAt;
 
-    public OrderResponse(Long orderId, String status, List<OrderItemResponse> items, int totalPrice, LocalDate createdAt) {
+    public OrderResponse(Long orderId, String status, List<OrderItemResponse> items, int totalPrice, Date createdAt) {
         this.orderId = orderId;
         this.status = status;
         this.items = items;
@@ -55,11 +56,11 @@ public class OrderResponse {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDate getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }
