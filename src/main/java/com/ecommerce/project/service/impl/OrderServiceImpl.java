@@ -73,17 +73,74 @@ public class OrderServiceImpl implements OrderService {
                 order.getStatus(),
                 itemResponses,
                 order.getTotal_price(),
-                new Date(System.currentTimeMillis())
+                order.getCreatedDate()
         );
     }
 
     @Override
     public List<OrderResponse> getOrderHistory() {
-        return List.of();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        User user = userRepository.findByEmail(email);
+
+        List<Order>allOrders = user.getOrders();
+        List<OrderResponse>allOrdersResponse = new ArrayList<>();
+        for (Order order : allOrders) {
+
+            List<OrderItemResponse> itemResponses = new ArrayList<>();
+
+            for (OrderItem item : order.getItems()) {
+
+                OrderItemResponse itemResponse =
+                        new OrderItemResponse(
+                                item.getProduct().getId(),
+                                item.getProduct().getName(),
+                                item.getQuantity(),
+                                item.getPrice()
+                        );
+
+                itemResponses.add(itemResponse);
+            }
+
+            OrderResponse orderResponse = new OrderResponse(
+                    order.getId(),
+                    order.getStatus(),
+                    itemResponses,
+                    order.getTotal_price(),
+                    order.getCreatedDate()
+            );
+
+            allOrdersResponse.add(orderResponse);
+        }
+        return allOrdersResponse;
     }
 
+
+
     @Override
-    public OrderResponse updateOrderStatus() {
-        return null;
+    public OrderResponse updateOrderStatus(Long id, String status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order with the ID not found"));
+        order.setStatus(status);
+        orderRepository.save(order);
+        List<OrderItemResponse>itemResponses = new ArrayList<>();
+        for(OrderItem item: order.getItems()){
+            OrderItemResponse response =
+                    new OrderItemResponse(
+                            item.getProduct().getId(),
+                            item.getProduct().getName(),
+                            item.getQuantity(),
+                            item.getPrice()
+                    );
+            itemResponses.add(response);
+        }
+        return new OrderResponse(
+                order.getId(),
+                order.getStatus(),
+                itemResponses,
+                order.getTotal_price(),
+                order.getCreatedDate()
+        );
     }
 }

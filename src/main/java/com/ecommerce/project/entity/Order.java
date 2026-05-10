@@ -2,6 +2,7 @@ package com.ecommerce.project.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -11,12 +12,13 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, User user, String status, int total_price, List<OrderItem> items) {
+    public Order(Long id, User user, String status, int total_price, List<OrderItem> items, LocalDate createdDate) {
         this.id = id;
         this.user = user;
         this.status = status;
         this.total_price = total_price;
         this.items = items;
+        this.createdDate = createdDate;
     }
 
     @Id
@@ -35,6 +37,8 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem>items;
+
+    private LocalDate createdDate;
 
     public List<OrderItem> getItems() {
 
@@ -75,5 +79,13 @@ public class Order {
 
     public void setTotal_price(int total_price) {
         this.total_price = total_price;
+    }
+
+    public LocalDate getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
     }
 }

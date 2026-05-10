@@ -11,9 +11,9 @@ public class OrderResponse {
     private String status;
     private List<OrderItemResponse>items;
     private int totalPrice;
-    private Date createdAt;
+    private LocalDate createdAt;
 
-    public OrderResponse(Long orderId, String status, List<OrderItemResponse> items, int totalPrice, Date createdAt) {
+    public OrderResponse(Long orderId, String status, List<OrderItemResponse> items, int totalPrice, LocalDate createdAt) {
         this.orderId = orderId;
         this.status = status;
         this.items = items;
@@ -56,11 +56,11 @@ public class OrderResponse {
         this.totalPrice = totalPrice;
     }
 
-    public Date getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 }
