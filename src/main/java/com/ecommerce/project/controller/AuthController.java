@@ -6,6 +6,7 @@ import com.ecommerce.project.dto.ProductResponse;
 import com.ecommerce.project.dto.RegisterRequest;
 import com.ecommerce.project.service.AuthService;
 import com.ecommerce.project.service.impl.AuthServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,9 @@ import java.util.List;
 @RestController
 public class AuthController {
 
+    @Autowired
     private AuthServiceImpl authService;
+
     @PostMapping("/api/auth/register")
     public ResponseEntity<AuthResponse>register(@RequestBody RegisterRequest request){
         AuthResponse authResponse = authService.register(request);

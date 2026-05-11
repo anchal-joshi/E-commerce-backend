@@ -4,6 +4,7 @@ import com.ecommerce.project.dto.ProductRequest;
 import com.ecommerce.project.dto.ProductResponse;
 import com.ecommerce.project.service.ProductService;
 import com.ecommerce.project.service.impl.ProductServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 public class ProductController {
 
+    @Autowired
     private ProductServiceImpl productService;
 
     @GetMapping("api/products")
