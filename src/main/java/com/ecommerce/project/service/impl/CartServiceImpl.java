@@ -7,6 +7,7 @@ import com.ecommerce.project.entity.Cart;
 import com.ecommerce.project.entity.CartItem;
 import com.ecommerce.project.entity.Product;
 import com.ecommerce.project.entity.User;
+import com.ecommerce.project.exception.ResourceNotFoundException;
 import com.ecommerce.project.repositories.CartItemRepository;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.repositories.ProductRepository;
@@ -44,7 +45,7 @@ public class CartServiceImpl implements CartService {
         User user = userRepository.findByEmail(email);
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Cart cart = user.getCart();
 
         CartItem existingItem = null;
@@ -99,7 +100,7 @@ public class CartServiceImpl implements CartService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Cart cart = user.getCart();
         CartItem existingItem = null;
 
@@ -111,13 +112,13 @@ public class CartServiceImpl implements CartService {
         }
 
         if (existingItem == null){
-            throw new RuntimeException("Cart Item not found!");
+            throw new ResourceNotFoundException("Cart Item not found!");
         }
 
         if(request.getQuantity() == 0){
             cart.getItems().remove(existingItem);
         } else if (request.getQuantity() <0) {
-            throw new RuntimeException("Quantity cannot be negative");
+            throw new ResourceNotFoundException("Quantity cannot be negative");
         }
         else {
             existingItem.setQuantity(request.getQuantity());
@@ -155,7 +156,7 @@ public class CartServiceImpl implements CartService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Cart cart = user.getCart();
         CartItem existingItem = null;
 

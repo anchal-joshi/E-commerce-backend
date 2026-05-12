@@ -3,6 +3,8 @@ import com.ecommerce.project.dto.AuthResponse;
 import com.ecommerce.project.dto.LoginRequest;
 import com.ecommerce.project.dto.RegisterRequest;
 import com.ecommerce.project.entity.User;
+import com.ecommerce.project.exception.InvalidCredentialsException;
+import com.ecommerce.project.exception.UserAlreadyExistsException;
 import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.service.AuthService;
 import com.ecommerce.project.util.JwtUtil;
@@ -26,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request){
         if (userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistsException("Email already exists.");
         }
 
         User user = new User();
@@ -49,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail());
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Wrong password");
+            throw new InvalidCredentialsException("Invalid credentials.");
         }
 
         String token = jwtUtil.generateToken(user.getEmail());

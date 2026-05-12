@@ -4,6 +4,7 @@ import com.ecommerce.project.dto.CartItemRequest;
 import com.ecommerce.project.dto.CartResponse;
 import com.ecommerce.project.entity.Cart;
 import com.ecommerce.project.service.impl.CartServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class CartController {
     }
 
     @PostMapping("/api/cart")
-    public ResponseEntity<CartResponse>addItem(@RequestBody CartItemRequest request){
+    public ResponseEntity<CartResponse>addItem(@Valid @RequestBody CartItemRequest request){
 
         return ResponseEntity.ok(cartService.addToCart(request));
     }
@@ -28,13 +29,13 @@ public class CartController {
     @PutMapping("/api/cart/{id}")
     public ResponseEntity<CartResponse>update(
             @PathVariable Long id,
-            @RequestBody CartItemRequest request){
+            @Valid @RequestBody CartItemRequest request){
 
         return ResponseEntity.ok(cartService.updateQuantity(id, request));
     }
 
     @DeleteMapping("/api/cart/{id}")
-    public ResponseEntity<String>delete(Long id){
+    public ResponseEntity<String>delete(@PathVariable Long id){
         cartService.deleteItem(id);
         return ResponseEntity.ok("Cart Item deleted.");
     }

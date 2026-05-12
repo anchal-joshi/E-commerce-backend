@@ -3,6 +3,7 @@ package com.ecommerce.project.service.impl;
 import com.ecommerce.project.dto.ProductRequest;
 import com.ecommerce.project.dto.ProductResponse;
 import com.ecommerce.project.entity.Product;
+import com.ecommerce.project.exception.ResourceNotFoundException;
 import com.ecommerce.project.repositories.ProductRepository;
 import com.ecommerce.project.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: "+ id));
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
@@ -54,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public String deleteProduct(Long id) {
         if (!productRepository.existsById(id)){
-            throw new RuntimeException("Product not found");
+            throw new ResourceNotFoundException("Product not found with ID: "+ id);
         }
         productRepository.deleteById(id);
         return "Product with ID: "+ id + " deleted.";
@@ -80,7 +81,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse getSingleProduct(Long id) {
-        Product product = productRepository.findById(id).orElseThrow();
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: "+ id));
         return new ProductResponse(
                 product.getName(),
                 product.getDescription(),

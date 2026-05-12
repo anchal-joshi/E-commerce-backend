@@ -4,6 +4,7 @@ import com.ecommerce.project.dto.ProductRequest;
 import com.ecommerce.project.dto.ProductResponse;
 import com.ecommerce.project.service.ProductService;
 import com.ecommerce.project.service.impl.ProductServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,24 +18,24 @@ public class ProductController {
     @Autowired
     private ProductServiceImpl productService;
 
-    @GetMapping("api/products")
+    @GetMapping("/api/products")
     public ResponseEntity<List<ProductResponse>>getProducts(){
         List<ProductResponse>allProducts = productService.getAllProducts();
         return ResponseEntity.ok(allProducts);
     }
 
-    @GetMapping("api/product/{id}")
+    @GetMapping("/api/product/{id}")
     public ResponseEntity<ProductResponse>getProduct(@PathVariable Long id){
         return ResponseEntity.ok(productService.getSingleProduct(id));
     }
 
     @PostMapping("/api/products")
-    public ResponseEntity<ProductResponse>addProduct(@RequestBody ProductRequest request){
+    public ResponseEntity<ProductResponse>addProduct(@Valid @RequestBody ProductRequest request){
         return ResponseEntity.ok(productService.addProduct(request));
     }
 
     @PutMapping("/api/products/{id}")
-    public ResponseEntity<ProductResponse>updateProduct(@RequestBody ProductRequest request,
+    public ResponseEntity<ProductResponse>updateProduct(@Valid @RequestBody ProductRequest request,
                                                         @PathVariable Long id){
         ProductResponse productResponse = productService.updateProduct(id, request);
         return ResponseEntity.ok(productResponse);

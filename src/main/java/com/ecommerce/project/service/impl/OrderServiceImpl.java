@@ -3,6 +3,8 @@ package com.ecommerce.project.service.impl;
 import com.ecommerce.project.dto.OrderItemResponse;
 import com.ecommerce.project.dto.OrderResponse;
 import com.ecommerce.project.entity.*;
+import com.ecommerce.project.exception.EmptyCartException;
+import com.ecommerce.project.exception.ResourceNotFoundException;
 import com.ecommerce.project.repositories.OrderRepository;
 import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.service.OrderService;
@@ -29,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
         User user = userRepository.findByEmail(email);
         Cart cart = user.getCart();
         if (cart == null || cart.getItems().isEmpty()){
-            throw new RuntimeException("Your Cart is empty.");
+            throw new EmptyCartException("Your Cart is empty.");
         }
         Order order = new Order();
         order.setUser(user);
@@ -121,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse updateOrderStatus(Long id, String status) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order with the ID not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order with the ID not found"));
         order.setStatus(status);
         orderRepository.save(order);
         List<OrderItemResponse>itemResponses = new ArrayList<>();
