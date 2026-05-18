@@ -3,12 +3,14 @@ package com.ecommerce.project.exception;
 import com.ecommerce.project.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.lang.reflect.InaccessibleObjectException;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,6 +24,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFound(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of(
+                        "status", 401,
+                        "message", ex.getMessage()
+                ));
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> userAlreadyExistsException(UserAlreadyExistsException exception){
         ErrorResponse errorResponse = new ErrorResponse();
@@ -31,7 +42,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(InaccessibleObjectException.class)
+    @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> invalidCredentialsException(InvalidCredentialsException exception){
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus("401 Unauthorized");
@@ -62,7 +73,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse>methodArgumentNotValidException(MethodArgumentNotValidException exception){
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus("400 Bad_Request");
-        errorResponse.setMessage(exception.getMessage());
+        errorResponse.setMessage(
+                exception.getBindingResult()
+                        .getFieldError()
+                        .getDefaultMessage()
+        );
         errorResponse.setTimestamp(LocalDateTime.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

@@ -2,6 +2,7 @@ package com.ecommerce.project.controller;
 
 import com.ecommerce.project.dto.CartItemRequest;
 import com.ecommerce.project.dto.CartResponse;
+import com.ecommerce.project.dto.UpdateQuantityRequest;
 import com.ecommerce.project.entity.Cart;
 import com.ecommerce.project.service.impl.CartServiceImpl;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class CartController {
     @PutMapping("/api/cart/{id}")
     public ResponseEntity<CartResponse>update(
             @PathVariable Long id,
-            @Valid @RequestBody CartItemRequest request){
+            @Valid @RequestBody UpdateQuantityRequest request){
 
         return ResponseEntity.ok(cartService.updateQuantity(id, request));
     }

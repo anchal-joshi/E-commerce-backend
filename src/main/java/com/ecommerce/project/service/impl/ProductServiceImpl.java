@@ -28,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
 
         return new ProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
@@ -45,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(request.getQuantity());
         productRepository.save(product);
         return new ProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
@@ -67,6 +69,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductResponse>responseList = new ArrayList<>();
         for(Product product : allProducts){
             ProductResponse response = new ProductResponse(
+                    product.getId(),
                     product.getName(),
                     product.getDescription(),
                     product.getPrice(),
@@ -84,6 +87,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: "+ id));
         return new ProductResponse(
+                product.getId(),
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),

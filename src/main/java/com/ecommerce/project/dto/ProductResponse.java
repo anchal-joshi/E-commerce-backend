@@ -1,12 +1,14 @@
 package com.ecommerce.project.dto;
 
 public class ProductResponse {
+    private Long id;
     private String name;
     private String description;
     private int price;
     private int quantity;
 
-    public ProductResponse(String name, String description, int price, int quantity) {
+    public ProductResponse(Long id, String name, String description, int price, int quantity) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -46,5 +48,13 @@ public class ProductResponse {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

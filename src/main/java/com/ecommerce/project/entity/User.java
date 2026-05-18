@@ -48,7 +48,7 @@ public class User {
         return id;
     }
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Cart cart;
 
     public void setId(Long id) {

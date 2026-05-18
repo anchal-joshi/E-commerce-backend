@@ -1,16 +1,26 @@
 package com.ecommerce.project.dto;
 
 public class CartItemResponse {
+    private Long id;
     private Long productId;
     private String productName;
     private int quantity;
     private int price;
 
-    public CartItemResponse(Long productId, String productName, int quantity, int price) {
+    public CartItemResponse(Long id, Long productId, String productName, int quantity, int price) {
+        this.id = id;
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public CartItemResponse() {
@@ -29,7 +39,7 @@ public class CartItemResponse {
     }
 
     public void setProductName(String productName) {
-        productName = productName;
+        this.productName = productName;
     }
 
     public int getQuantity() {

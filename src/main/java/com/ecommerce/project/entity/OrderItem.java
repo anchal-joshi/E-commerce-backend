@@ -1,6 +1,7 @@
 package com.ecommerce.project.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "order_items")
@@ -31,9 +32,11 @@ public class OrderItem {
     private Product product;
 
     @Column(nullable = false)
+    @Positive(message = "Quantity must be positive")
     private int quantity;
 
     @Column(nullable = false)
+    @Positive(message = "Price must be positive")
     private int price;
 
     public Long getId() {

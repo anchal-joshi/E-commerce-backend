@@ -21,7 +21,7 @@ public class ErrorResponse {
     }
 
     public void setStatus(String status) {
-        status = status;
+        this.status = status;
     }
 
     public String getMessage() {

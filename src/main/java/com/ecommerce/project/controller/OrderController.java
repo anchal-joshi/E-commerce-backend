@@ -1,6 +1,7 @@
 package com.ecommerce.project.controller;
 
 import com.ecommerce.project.dto.OrderResponse;
+import com.ecommerce.project.dto.OrderStatusRequest;
 import com.ecommerce.project.service.impl.OrderServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,10 @@ public class OrderController {
     }
 
     @PutMapping("/api/orders/{id}/status")
-    public ResponseEntity<OrderResponse>updateStatus(@PathVariable Long id,
-                                                     @Valid @RequestBody String status){
-        return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
+    public ResponseEntity<OrderResponse>updateStatus(
+            @PathVariable Long id,
+
+            @RequestBody OrderStatusRequest request){
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, request.getStatus()));
     }
 }

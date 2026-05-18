@@ -3,6 +3,7 @@ package com.ecommerce.project.service.impl;
 import com.ecommerce.project.dto.CartItemRequest;
 import com.ecommerce.project.dto.CartItemResponse;
 import com.ecommerce.project.dto.CartResponse;
+import com.ecommerce.project.dto.UpdateQuantityRequest;
 import com.ecommerce.project.entity.Cart;
 import com.ecommerce.project.entity.CartItem;
 import com.ecommerce.project.entity.Product;
@@ -15,6 +16,7 @@ import com.ecommerce.project.repositories.UserRepository;
 import com.ecommerce.project.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,7 +44,8 @@ public class CartServiceImpl implements CartService {
         String email = SecurityContextHolder.getContext()
                         .getAuthentication()
                         .getName();
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by email :" + email));
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -50,6 +53,9 @@ public class CartServiceImpl implements CartService {
 
         CartItem existingItem = null;
 
+        if (request.getQuantity() > product.getStock()) {
+            throw new RuntimeException("Insufficient stock");
+        }
         for(CartItem cartItem : cart.getItems()){
             if (cartItem.getProduct().getId().equals(product.getId())){
                 existingItem = cartItem;
@@ -82,6 +88,7 @@ public class CartServiceImpl implements CartService {
         for (CartItem cartItem: cart.getItems()){
             CartItemResponse response = new CartItemResponse(
                     cartItem.getId(),
+                    cartItem.getProduct().getId(),
                     cartItem.getProduct().getName(),
                     cartItem.getQuantity(),
                     cartItem.getProduct().getPrice()
@@ -96,28 +103,32 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse updateQuantity(Long id, CartItemRequest request){
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    public CartResponse updateQuantity(Long id, UpdateQuantityRequest request){
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with email: "+ email));
+
         Cart cart = user.getCart();
-        CartItem existingItem = null;
 
-        for(CartItem cartItem : cart.getItems()){
-            if (cartItem.getProduct().getId().equals(product.getId())){
-                existingItem = cartItem;
-                break;
-            }
+        CartItem existingItem = cartItemRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Cart item not found"));
+
+
+        //Security Check
+        if (!existingItem.getCart().getId().equals(cart.getId())){
+            throw new ResourceNotFoundException("cart item does not belong to user");
         }
 
-        if (existingItem == null){
-            throw new ResourceNotFoundException("Cart Item not found!");
-        }
-
-        if(request.getQuantity() == 0){
+        if (request.getQuantity() == 0){
             cart.getItems().remove(existingItem);
-        } else if (request.getQuantity() <0) {
+            cartItemRepository.delete(existingItem);
+        } else if (request.getQuantity() < 0) {
             throw new ResourceNotFoundException("Quantity cannot be negative");
         }
         else {
@@ -125,49 +136,48 @@ public class CartServiceImpl implements CartService {
             cartItemRepository.save(existingItem);
         }
 
+
         int totalPrice = 0;
-        for (CartItem cartItem: cart.getItems()){
+        for (CartItem item: cart.getItems()){
             totalPrice +=
-                    cartItem.getProduct().getPrice()
-                    *cartItem.getQuantity();
+                    item.getProduct().getPrice() * item.getQuantity();
         }
 
+
         List<CartItemResponse>itemResponses = new ArrayList<>();
-        for (CartItem cartItem: cart.getItems()){
+        for (CartItem item: cart.getItems()){
             CartItemResponse response = new CartItemResponse(
-                    cartItem.getId(),
-                    cartItem.getProduct().getName(),
-                    cartItem.getQuantity(),
-                    cartItem.getProduct().getPrice()
+                    item.getId(),
+                    item.getProduct().getId(),
+                    item.getProduct().getName(),
+                    item.getQuantity(),
+                    item.getProduct().getPrice()
             );
 
             itemResponses.add(response);
         }
+        return new CartResponse(itemResponses, totalPrice);
 
 
-        return new CartResponse(
-                itemResponses,
-                totalPrice
-        );
     }
 
     @Override
     public String deleteItem(Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        Cart cart = user.getCart();
-        CartItem existingItem = null;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: "+ email));
 
-        for(CartItem cartItem : cart.getItems()){
-            if (cartItem.getProduct().getId().equals(product.getId())){
-                existingItem = cartItem;
-                break;
-            }
+        Cart cart = user.getCart();
+        CartItem cartItem = cartItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
+
+        if (!cartItem.getCart().getId().equals(cart.getId())){
+            throw new ResourceNotFoundException(
+                    "Cart item does not belong to this user"
+            );
         }
 
-        cartItemRepository.delete(existingItem);
+        cartItemRepository.delete(cartItem);
 
         return "Item deleted";
     }
@@ -176,7 +186,9 @@ public class CartServiceImpl implements CartService {
     public CartResponse viewCart() {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: "+ email));
+
         Cart cart = user.getCart();
         int totalPrice = 0;
         for (CartItem cartItem: cart.getItems()){
@@ -188,6 +200,7 @@ public class CartServiceImpl implements CartService {
         List<CartItemResponse> itemResponse = new ArrayList<>();
         for (CartItem cartItem: cart.getItems()){
             CartItemResponse response = new CartItemResponse(
+                    cartItem.getId(),
                     cartItem.getProduct().getId(),
                     cartItem.getProduct().getName(),
                     cartItem.getQuantity(),
