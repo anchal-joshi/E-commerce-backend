@@ -1,5 +1,5 @@
 # E-commerce-backend
-feat: complete Phase 1 - core e-commerce backend (internship-ready)
+feat: complete Phase 1 - core e-commerce backend 
 
 Auth & Security
 - JWT-based register/login with BCrypt password encoding
